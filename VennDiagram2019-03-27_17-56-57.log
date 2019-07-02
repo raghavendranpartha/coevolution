@@ -1,0 +1,7 @@
+INFO [2019-03-27 17:56:57] [[1]]
+INFO [2019-03-27 17:56:57] list(vert = hsap.vert.genes, fly = hsap.dmel.genes, yeast = hsap.scer.genes, 
+INFO [2019-03-27 17:56:57]     worm = hsap.cele.genes)
+INFO [2019-03-27 17:56:57] 
+INFO [2019-03-27 17:56:57] [[2]]
+INFO [2019-03-27 17:56:57] NULL
+INFO [2019-03-27 17:56:57] 

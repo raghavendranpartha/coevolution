@@ -1,0 +1,17 @@
+{
+    "contents" : "require(dplyr)\nrequire(data.table)\nrequire(ggplot2)\nrequire(fitdistrplus)\n\n#merc <- readRDS('~/Documents/erc/data/saves/mamm63.erc.rds')\n#merc <- readRDS('~/Documents/erc/data/saves/vert39.erc.rds')\n#merc <- readRDS('~/Documents/erc/data/saves/alldroso22.tre.erc.rds')\n#merc <- readRDS('~/Documents/erc/data/saves/all_Scer.erc.rds')\n#merc <- readRDS('~/Documents/erc/data/saves/worms17.erc.rds')\n\nmdat <- merc[lower.tri(merc)]\n#rm('merc')\nmdat <- mdat[is.finite(mdat)] \n#mdatscaled <- (mdat+1)/2\n#rm('mdat')\n#betafit <- fitdist(mdatscaled, distr = 'beta',method = 'mle',lower = c(0, 0), keepdata = F)\n#saveRDS(betafit, file = '../data/ercbetafit/wormercbetafit.rds')\n#betafit$data <- NULL\n#saveRDS(betafit, file = '../data/ercbetafit/vertercbetafit.rds')\n#saveRDS(betafit, file = '../data/ercbetafit/dmelercbetafit.rds')\n#saveRDS(betafit, file = '../data/ercbetafit/scerercbetafit.rds')\n\n\nnps <- 1000000\nmbet <- readRDS('../data/ercbetafit/mammalercbetafit.rds')\nxbs <- rbeta(nps,mbet$estimate[1],mbet$estimate[2])*2-1\nhist(mdat, breaks = 50, probability = T,main='Beta fit to mammal ERC', xlab = 'mammal erc')\nlines(density(xbs),lwd=2,xlim=c(-1,1))\nabline(v=0, lty = 2, lwd = 2)\nrm('mdat')\n\nnps <- 5000000\nmbet <- readRDS('../data/ercbetafit/mammalercbetafit.rds')\nxbs <- rbeta(nps,mbet$estimate[1],mbet$estimate[2])*2-1\nplot(density(xbs),lwd=2,xlim=c(-1,1),'Beta fits to ERC', xlab = 'erc')\nabline(v=0, lty = 2, lwd = 2)\n#plot(pts, pbeta(pts,mbet$estimate[1],mbet$estimate[2]))\n\n\nlins <- c('vert','dmel','worm','scer')\ncols <- c('red','blue','magenta','green')\nnames(cols) <- lins\nfor(ii in lins){\n     betafit <- readRDS(paste0('../data/ercbetafit/',ii,'ercbetafit.rds'))\n     xbs <- rbeta(nps,betafit$estimate[1],betafit$estimate[2])*2-1\n     lines(density(xbs),col=cols[ii], lwd = 2)\n}\nlegend('topleft',c('mamm',lins),col = c('black',cols),lty = 1,lwd=2)\n\n\nmambeta <- readRDS('../data/ercbetafit/mammalercbetafit.rds')\n\n\n\n\nverc <- readRDS('~/Documents/erc/data/saves/vert39.erc.rds')\nderc <- readRDS('~/Documents/erc/data/saves/alldroso22.tre.erc.rds')\nyerc <- readRDS('~/Documents/erc/data/saves/all_Scer.erc.rds')\n\n\n\n\n\n\n# source(\"https://bioconductor.org/biocLite.R\")\n# biocLite('topGO')\n# biocLite('GOSemSim')\n\nrequire(topGO)\nrequire(GOSemSim)",
+    "created" : 1551460717184.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3626302944",
+    "id" : "D8E6A405",
+    "lastKnownWriteTime" : 1551460739,
+    "path" : "~/Documents/coevolution/code/visallerc_betafits.R",
+    "project_path" : "visallerc_betafits.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

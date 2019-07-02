@@ -1,0 +1,18 @@
+{
+    "contents" : "library(RERconverge)\nrequire(dplyr)\nrequire(data.table)\n\nmmaxn <- mtre$report%*%t(mtre$report)\nmmaxn[upper.tri(mmaxn, diag = T)] = NA",
+    "created" : 1551466934558.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2223798193",
+    "id" : "5F83C5A7",
+    "lastKnownWriteTime" : 1551467050,
+    "path" : "~/Documents/coevolution/code/nspp_erc.R",
+    "project_path" : "nspp_erc.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

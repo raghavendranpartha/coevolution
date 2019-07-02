@@ -1,0 +1,18 @@
+{
+    "contents" : "library(RERconverge)\nhsap.genes <- readLines('../data/hsap.genes')\nhsap.vert.genes <- readLines('../data/hsap.vert.genes')\nhsap.dmel.genes <- readLines('../data/hsap.dmel.genes')\nhsap.cele.genes <- readLines('../data/hsap.cele.genes')\nhsap.scer.genes <- readLines('../data/hsap.scer.genes')\n\ngenepresence <- (hsap.genes %in% hsap.vert.genes)+(hsap.genes %in% hsap.dmel.genes)+(hsap.genes %in% hsap.scer.genes)+(hsap.genes %in% hsap.cele.genes)\nnames(genepresence) = hsap.genes\ntable(genepresence)\ngenesinmorethanonedataset <- hsap.genes[which(genepresence>1)]\ncommonpairs <- as.data.frame(t(combn(genesinmorethanonedataset,2)), stringsAsFactors = F)\ncommonpairs$gene1c = genepresence[commonpairs$V1]\ncommonpairs$gene2c = genepresence[commonpairs$V2]\ncommonpairs$pairc = with(commonpairs, gene1c+gene2c)\ncommonpairs <- arrange(commonpairs, desc(pairc))\n\nhead(commonpairs, 20)\n\nnpairs <- 1000\ntestpairs <- commonpairs[1:npairs,]\n\n\n\n#commongenes <- intersect(intersect(hsap.vert.genes,hsap.dmel.genes),hsap.scer.genes)\n\nflymap <- fread('../data/dmel.hsap.geneIDsUniProtIDs.map')\nyeastmap <- fread('../data/hsap.scer.geneIDsUniProtIDs.map')\nwormmap <- fread('../data/cele.OgwbgnUniprotSymbol.map')\nwormmap.vec <- wormmap$og\nnames(wormmap.vec) <- wormmap$symbol\nflymap.vec <- flymap$og\nnames(flymap.vec) <- flymap$hsapsymbol\nyeastmap.vec <- yeastmap$scersymbol\nnames(yeastmap.vec) <- yeastmap$hsapsymbol\n\ngetercasvec <- function(mat, gen){\n     #mat <- merc\n     genv <- match(gen,rownames(mat))\n     genord <- gen[order(genv)]\n     out <- mat[genord,genord][lower.tri(mat[genord,genord], diag = F)]\n     out[is.infinite(out)] <- NA\n     out\n}\n\ngetercbetapval <- function(mat, sh1, sh2,gen){\n     #mat <- merc\n     genv <- match(gen,rownames(mat))\n     genord <- gen[order(genv)]\n     out <- mat[genord,genord][lower.tri(mat[genord,genord], diag = F)]\n     out[is.infinite(out)] <- NA\n     out\n}\n\n\ncommonpairserc <- sapply(c(1:nrow(testpairs)), function(x){\n     #x <- 1\n     #gen1 <- commonpairs[x,1]\n     #gen2 <- commonpairs[x,2]\n     #x <- 1\n     c(getercasvec(merc, c(commonpairs$V1[x],commonpairs$V2[x])),\n       getercasvec(verc, c(commonpairs$V1[x],commonpairs$V2[x])),\n       getercasvec(werc, wormmap.vec[c(commonpairs$V1[x],commonpairs$V2[x])]),\n       getercasvec(derc, flymap.vec[c(commonpairs$V1[x],commonpairs$V2[x])]),\n       getercasvec(yerc, yeastmap.vec[c(commonpairs$V1[x],commonpairs$V2[x])]))\n})\n\nsumerc <- colSums(commonpairserc, na.rm = T)\nquantile(sumerc)\nsum(sumerc > 1)\n\nsaveRDS(list(genes = commongenes, pairs = commonpairs, erc = commonpairserc), file = 'CommonGenePairsErc.rds')",
+    "created" : 1551460602905.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4194571982",
+    "id" : "C9EE2CF0",
+    "lastKnownWriteTime" : 1551462388,
+    "path" : "~/Documents/coevolution/code/combinederc.R",
+    "project_path" : "combinederc.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

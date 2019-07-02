@@ -1,0 +1,18 @@
+{
+    "contents" : "library(RERconverge)\nrequire(dplyr)\nrequire(data.table)\n\nmmaxn <- mtre$report%*%t(mtre$report)\nmmaxn[upper.tri(mmaxn, diag = T)] = NA\nvmaxn <- vtre$report%*%t(vtre$report)\nvmaxn[upper.tri(vmaxn, diag = T)] = NA\ndmaxn <- dtre$report%*%t(dtre$report)\ndmaxn[upper.tri(dmaxn, diag = T)] = NA\nwmaxn <- wtre$report%*%t(wtre$report)\nwmaxn[upper.tri(wmaxn, diag = T)] = NA\nymaxn <- ytre$report%*%t(ytre$report)\nymaxn[upper.tri(ymaxn, diag = T)] = NA\n\nquantile(mmaxn, probs = seq(0,1,length.out = 4), na.rm = T)",
+    "created" : 1551467116402.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "194441356",
+    "id" : "BA2C07B2",
+    "lastKnownWriteTime" : 1551467520,
+    "path" : "~/Documents/coevolution/code/nspp_erc.R",
+    "project_path" : "nspp_erc.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

@@ -1,0 +1,18 @@
+{
+    "contents" : "library(RERconverge)\nrequire(dplyr)\nrequire(data.table)\n\nmtre <- readRDS('~/Documents/erc/data/saves/mamm63nt.trees.rds')\nvtre <- readRDS('~/Documents/erc/data/saves/vert39.trees.rds')\ndtre <- readRDS('~/Documents/erc/data/saves/alldroso22.tre.rds')\nwtre <- readRDS('~/Documents/erc/data/saves/worms17.trees.rds')\nytre <- readRDS('~/Documents/erc/data/saves/all_Scer.tre.rds')\nmerc <- readRDS('~/Documents/erc/data/saves/mamm63.erc.rds')\nverc <- readRDS('~/Documents/erc/data/saves/vert39.erc.rds')\nderc <- readRDS('~/Documents/erc/data/saves/alldroso22.tre.erc.rds')\nwerc <- readRDS('~/Documents/erc/data/saves/worms17.erc.rds')\nyerc <- readRDS('~/Documents/erc/data/saves/all_Scer.erc.rds')\n\n#nvals <- 10000\n#hist(mtre$paths, breaks = 25, probability = T)\nqqm = quantile(mtre$paths, probs = seq(0,1,length.out = 101), na.rm = T)\nqqv = quantile(vtre$paths, probs = seq(0,1,length.out = 101), na.rm = T)\nqqd = quantile(dtre$paths, probs = seq(0,1,length.out = 101), na.rm = T)\nqqw = quantile(wtre$paths, probs = seq(0,1,length.out = 101), na.rm = T)\nqqy = quantile(ytre$paths, probs = seq(0,1,length.out = 101), na.rm = T)\n\nlins <- c('vert','dmel','worm','scer')\ncols <- c('red','blue','magenta','green')\nplot(seq(0,1,length.out = 101), qqm, log = 'y',type = 'l', lwd = 2, ylim = c(1e-06,100), xlab = 'probability',\n     ylab = 'quantiles')\nlines(seq(0,1,length.out = 101), qqv, lwd = 2, col = 'red')\nlines(seq(0,1,length.out = 101), qqd, lwd = 2, col = 'blue')\nlines(seq(0,1,length.out = 101), qqw, lwd = 2, col = 'magenta')\nlines(seq(0,1,length.out = 101), qqy, lwd = 2, col = 'green')\nlegend('topleft',c('mamm',lins),col = c('black',cols),lty = 1,lwd=2)",
+    "created" : 1551461819923.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4291312811",
+    "id" : "993AAD23",
+    "lastKnownWriteTime" : 1551452564,
+    "path" : "~/Documents/coevolution/code/projdefault.R",
+    "project_path" : "projdefault.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "type" : "r_source"
+}
