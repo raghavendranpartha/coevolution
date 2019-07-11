@@ -50,6 +50,24 @@ write.table(corum.df.summ,'../data/tables/corum.all.tsv',
             quote = F, sep = '\t', row.names = F)
 
 corum.df.summ <- fread('../data/tables/corum.all.tsv', header = T)
+corum.df.summ.unq <- group_by(corum.df.summ, Name) %>%
+     arrange(Q.value.Integrated) %>% filter(row_number() <= 1) %>%
+     ungroup() %>% arrange(Q.value.Integrated)
+write.table(corum.df.summ.unq,'../data/tables/corum.uniqueName.all.tsv', 
+            quote = F, sep = '\t', row.names = F)
+
+corumtop30 <- fread('../data/tables/corum.uniqueName.all.tsv')[1:30,] %>%
+     mutate(Mean.Integrated.ERC = round(Mean.Integrated.ERC,3),
+            Mean.Mammal.ERC = round(Mean.Mammal.ERC,3),
+            P.value.Integrated = formatC(P.value.Integrated,3),
+            P.value.Mammal = formatC(P.value.Mammal,3),
+            Q.value.Integrated = formatC(Q.value.Integrated,3),
+            Q.value.Mammal = formatC(Q.value.Mammal,3))
+
+write.table(corumtop30, file = '../data/tables/corum.uniqueName.top30.tsv',
+            quote = F, sep = '\t', row.names = F)
+
+length(unique(corum.df.summ$Name))
 corum.df.summ.forroc <- select(corum.df.summ, c(4,5))
 setnames(corum.df.summ.forroc, c('interc','merc'))
 setnames(randcplxdfsumm,c('cplxid','dataset','interc','merc'))

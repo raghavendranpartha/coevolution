@@ -148,6 +148,40 @@ createRandomCplx.df <- function(genes, cplx, genepresenceint){
           as.data.frame(t(combn(randcplx[[x]],2))) %>% mutate(cplxid=x)
      }))
 }
+generate.randcplxs <- function(cplx, genes, genepresenceint, nrandoms){
+     lapply(1:nrandoms, function(y) {
+          print(y)
+          sapply(1:length(cplx), function(x){
+               genestosim <- genes[!genes %in% cplx[[x]]]
+               genestosimint <- genepresenceint[genestosim]
+               cplxgenesint <- genepresenceint[cplx[[x]]]
+               tabcplxgenesint <- table(cplxgenesint)
+               genesimforcplx <- sapply(1:length(tabcplxgenesint), function(y){
+                    sample(genestosim[genestosimint == as.numeric(names(tabcplxgenesint)[y])],
+                           tabcplxgenesint[y])
+               })
+               unlist(genesimforcplx, use.names = F)
+          })})
+}
+calc.betweencomplex.interc.numpairs <- function(combopairs, cplx){
+     as.data.frame(t(sapply(1:nrow(combopairs), function(x){
+          #print(x)
+          g1 <- cplx[[combopairs$V1[x]]]
+          g2 <- cplx[[combopairs$V2[x]]]
+          genepairs <- expand.grid(setdiff(g1,g2),setdiff(g2,g1))
+          ercv <- calcpairid(genepairs$Var1,genepairs$Var2, mat = intfterc)
+          c(mean(ercv, na.rm = T)*(length(ercv[!is.na(ercv)])>2),sum(!is.na(ercv)))
+     })))
+}
+calc.betweencomplex.interc <- function(combopairs, cplx){
+     sapply(1:nrow(combopairs), function(x){
+          g1 <- cplx[[combopairs$complexind1[x]]]
+          g2 <- cplx[[combopairs$complexind2[x]]]
+          genepairs <- expand.grid(setdiff(g1,g2),setdiff(g2,g1))
+          ercv <- calcpairid(genepairs$Var1,genepairs$Var2, mat = intfterc)
+          c(mean(ercv, na.rm = T)*(length(ercv[!is.na(ercv)])>2))
+     })
+}
 
 getsingleERCasdf <- function(mat,genelist){
      melt(getERCasmat(mat, genelist)) %>%
@@ -263,8 +297,10 @@ runroc.intvsmamm <- function(true.erc.df, bgd.erc.df,plot=F,titl = ''){
 runroc.string.intvsmamm <- function(true.erc.df, bgd.erc.df, levels = NULL,plot=F,titl = '',
                                     nPointsforcurve = NULL){
      #titl = 'STRING: Any'
-     #true.erc.df <- string.type.use.forall
-     #bgd.erc.df <- sample_n(onembgdpairs, size = 500000)
+#      true.erc.df = as.data.frame(filter(string.type.use.forall, score > 913))
+#      bgd.erc.df = stringany.controlpairs.with10pc
+#      levels = qs.any[-length(qs.any)]
+#      plot = F
      #levels = c(930,951,960)
      true.erc.df$lbl <- 1
      bgd.erc.df$lbl <- 0
@@ -274,9 +310,9 @@ runroc.string.intvsmamm <- function(true.erc.df, bgd.erc.df, levels = NULL,plot=
      nb.df$lbl <- factor(nb.df$lbl)
      for(ii in 1:length(levels)){
           assign(paste0('fg',ii), filter(nb.df, lbl == 1, score > levels[ii])$interc)
-          assign(paste0('bg',ii), filter(nb.df, lbl == 1)$interc)
+          assign(paste0('bg',ii), filter(nb.df, lbl == 0)$interc)
           assign(paste0('fg_mammonly',ii), filter(nb.df, lbl == 1, score > levels[ii])$merc)
-          assign(paste0('bg_mammonly',ii), filter(nb.df, lbl == 1)$merc)
+          assign(paste0('bg_mammonly',ii), filter(nb.df, lbl == 0)$merc)
           assign(paste0('rocint',ii),
                  roc.curve(scores.class0 = get(paste0('fg',ii))[!is.na(get(paste0('fg',ii)))], 
                            scores.class1 = get(paste0('bg',ii))[!is.na(get(paste0('bg',ii)))], curve = T))

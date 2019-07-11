@@ -53,6 +53,17 @@ write.table(arrange(dgg.df.summ,Q.value.Integrated),'../data/tables/omim.all.tsv
 
 dgg.df.summ <- fread('../data/tables/omim.all.tsv')
 
+dggtop20 <- fread('../data/tables/omim.all.tsv')[1:20,] %>%
+     mutate(Mean.Integrated.ERC = round(Mean.Integrated.ERC,3),
+            Mean.Mammal.ERC = round(Mean.Mammal.ERC,3),
+            P.value.Integrated = formatC(P.value.Integrated,3),
+            P.value.Mammal = formatC(P.value.Mammal,3),
+            Q.value.Integrated = formatC(Q.value.Integrated,3),
+            Q.value.Mammal = formatC(Q.value.Mammal,3))
+
+write.table(dggtop20, file = '../data/tables/omimtop20.tsv',
+            quote = F, sep = '\t', row.names = F)
+
 sum(dgg.df.summ$Q.value.Integrated < 0.05, na.rm = T)
 sum(dgg.df.summ$Q.value.Mammal < 0.05, na.rm = T)
 

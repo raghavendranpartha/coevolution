@@ -3,10 +3,28 @@ string.type.use.forall <- select(string.type.use, c('pair','interc','score','mer
      group_by(pair) %>% summarise(interc=interc[1],merc=merc[1],score=max(score),ndataset=ndataset[1])
 
 bgdbig <- readRDS('../data/toperc/bgdbig.rds')
-
-stringany.controlpairs <- ndataset.matched.controlpairs(filter(string.type.use.forall,score > 928)$ndataset, nPerLevelmult = 10)
-qs.any <- quantile(string.type.use.forall$score, c(0.9,0.95,0.98,0.99))
+set.seed(2)
+#stringany.controlpairs <- ndataset.matched.controlpairs(filter(string.type.use.forall,score > 928)$ndataset, nPerLevelmult = 10)
+qs.any <- quantile(string.type.use.forall$score, c(0.9,0.95,0.98,0.99,1))
 stringany.controlpairs.with10pc <- ndataset.matched.controlpairs(filter(string.type.use.forall,score > 913)$ndataset, nPerLevelmult = 10)
+
+for(ii in 1:(length(qs.any)-1)){
+     print(wilcox.test(filter(string.type.use.forall, score > qs.any[ii], score <= qs.any[ii+1])$interc,
+                 stringany.controlpairs.with10pc$interc,
+                 alternative = 'g')$p.v)
+}
+for(ii in 1:(length(qs.any)-1)){
+     print(wilcox.test(filter(string.type.use.forall, score > qs.any[ii])$interc,
+                       stringany.controlpairs.with10pc$interc,
+                       alternative = 'g')$p.v)
+}
+for(ii in 1:(length(qs.any)-2)){
+     print(paste0(qs.any[ii+1], qs.any[ii+2]))
+     print(paste0(qs.any[ii], qs.any[ii+1]))
+     print(wilcox.test(filter(string.type.use.forall, score > qs.any[ii+1], score <= qs.any[ii+2])$interc,
+                       filter(string.type.use.forall, score > qs.any[ii], score <= qs.any[ii+1])$interc,
+                       alternative = 'g')$p.value)
+}
 
 top10521levels <- sapply(unique(string.type.use$mode), function(xx){
      scs <- filter(string.type.use, mode == xx)$score
@@ -25,7 +43,7 @@ pdf('../figures/stringboxplots/any.interc.boxplot.pdf', height = 6, width = 8,fa
 #          yy = string.type.use.forall$interc, nbreaks = 3, titl = paste0('STRING PPIs'), 
 #          xlab = 'Confidence score', ylab = 'Integrated ERC', ylimi=c(-4,11))
 plotbox2(stringany.controlpairs.with10pc$interc,xx = string.type.use.forall$score, 
-         yy = string.type.use.forall$interc, breaksi = c(qs.any,996), leglabsi = c('Control','Top 10-5%','Top 5-2%','Top 2-1%','Top 1%'), titl = paste0('STRING PPIs'), xlab = 'Confidence score', ylab = 'Integrated ERC', ylimi=c(-4,11))
+         yy = string.type.use.forall$interc, breaksi = qs.any, leglabsi = c('Control','Top 10-5%','Top 5-2%','Top 2-1%','Top 1%'), titl = paste0('STRING PPIs'), xlab = 'Confidence score', ylab = 'Integrated ERC', ylimi=c(-4,11))
 dev.off()
 for(i in 1:7){
      ii <- names(table(string.type.use$mode))[i]
@@ -55,7 +73,7 @@ aucs.intandmamm <- sapply(unique(string.type.use$mode), function(modei){
 
 
 aucs.intandmamm.forany <- runroc.string.intvsmamm(true.erc.df = as.data.frame(filter(string.type.use.forall, score > 913)),
-                             stringany.controlpairs.with10pc, levels = qs.any,plot = F)
+                             stringany.controlpairs.with10pc, levels = qs.any[-length(qs.any)],plot = F)
 
 dfaucs.intandmamm.forany <- data.frame(auc = unlist(aucs.intandmamm.forany, use.names = F),
                                        Mode = 'Any',
@@ -75,12 +93,12 @@ plotdf$isany <- 1*(plotdf$Mode == 'Any')
 
 require(ggplot2)
 pdf('../figures/aurocs/string.modes.auc.top521.intvsmammerc.pdf', width = 10,height = 5,family = 'FreeSans')
-g <- ggplot(plotdf, 
+g <- ggplot(filter(plotdf,Mode!='catalysis'), 
             aes(x=Dataset,y=auc, shape=Mode, 
                 group = Mode, color=factor(isany)))+
      facet_grid(.~Method)+
      scale_color_manual(values=c("black","red"), guide = F)+
-     scale_shape_manual(values=1:length(unique(plotdf$Mode)))+
+     scale_shape_manual(values=c(0:6,9))+
      coord_cartesian(ylim=c(0.45,0.75))+
      ylab('AUC')+geom_point(size=3,stroke = 1.5)+geom_line(linetype='solid')+theme_bw()+
      theme(axis.text=element_text(size = 16,colour = 'black'),

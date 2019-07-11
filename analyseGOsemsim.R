@@ -25,6 +25,13 @@ controltoppairs$bpsemsim <- bgd500kBP[controltoppairs$pair]
 toppairs$ccsemsim <- top100kCC[toppairs$pair]
 controltoppairs$ccsemsim <- bgd500kCC[controltoppairs$pair]
 
+ns <- c(1000,10000,100000)
+for(nn in ns){
+     print(wilcox.test(toppairs[1:nn,]$mfsemsim, controltoppairs$mfsemsim, alternative = 'g')$p.value)
+     print(wilcox.test(toppairs[1:nn,]$ccsemsim, controltoppairs$ccsemsim, alternative = 'g')$p.value)
+     print(wilcox.test(toppairs[1:nn,]$bpsemsim, controltoppairs$bpsemsim, alternative = 'g')$p.value)
+}
+
 controltoppairs.control <- filter(controltoppairs, interc > -2, interc < 2)
 controltoppairs.control <- controltoppairs
 

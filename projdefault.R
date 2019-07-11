@@ -13,8 +13,6 @@ source('../code/funcsERCfromProjections.R')
 
 hsap.genes <- readLines('../data/hsap.genes')
 
-ndatafterc <- readRDS('../data/all.ndatasetsfterc.rds')
-
 intfterc <- readRDS('../data/allsum.fterc.rds')
 merc.sym <- readRDS('~/Documents/erc/data/saves/mamm63nt.trees.fterc.symm.rds')
 pairmap <- readRDS('../data/pairmapmat.rds')
@@ -24,6 +22,7 @@ orgzfg <- sort(c(org,zfg))
 hsap.genes.useforsim <- setdiff(hsap.genes,orgzfg)
 badblastpairs <- fread('../data/allgeneshg19.pairbitscore.gteq0p1.tsv', header = T)
 
+ndatafterc <- readRDS('../data/all.ndatasetsfterc.rds')
 #alllogpfterc <- readRDS('~/Documents/coevolution/data/allsum.logpfterc.rds')
 
 
