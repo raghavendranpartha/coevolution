@@ -1,8 +1,8 @@
 require(stringr)
 require(dplyr)
 require(data.table)
-require(PRROC)
-
+# require(PRROC)
+# 
 library(extrafont)
 #font_import()
 loadfonts(device="pdf")       #Register fonts for Windows bitmap output
@@ -165,21 +165,39 @@ generate.randcplxs <- function(cplx, genes, genepresenceint, nrandoms){
 }
 calc.betweencomplex.interc.numpairs <- function(combopairs, cplx){
      as.data.frame(t(sapply(1:nrow(combopairs), function(x){
-          #print(x)
-          g1 <- cplx[[combopairs$V1[x]]]
-          g2 <- cplx[[combopairs$V2[x]]]
-          genepairs <- expand.grid(setdiff(g1,g2),setdiff(g2,g1))
-          ercv <- calcpairid(genepairs$Var1,genepairs$Var2, mat = intfterc)
-          c(mean(ercv, na.rm = T)*(length(ercv[!is.na(ercv)])>2),sum(!is.na(ercv)))
+          if(x %% 10000 == 0){print(x)}
+          g1r <- cplx[[combopairs$V1[x]]]
+          g2r <- cplx[[combopairs$V2[x]]]
+          g12r <- intersect(g1r, g2r)
+          g1 <- g1r[!g1r %in% g12r]
+          g2 <- g2r[!g2r %in% g12r]
+          if(length(g1)>2 & length(g2)>2){
+               genepairs <- expand.grid(g1,g2)
+               ercv <- calcpairid(genepairs$Var1,genepairs$Var2, mat = intfterc)
+               c(
+                    mean(ercv, na.rm = T),sum(!is.na(ercv))
+               )
+          }else{
+               c(NA,NA)
+          }
+          
      })))
 }
 calc.betweencomplex.interc <- function(combopairs, cplx){
      sapply(1:nrow(combopairs), function(x){
-          g1 <- cplx[[combopairs$complexind1[x]]]
-          g2 <- cplx[[combopairs$complexind2[x]]]
-          genepairs <- expand.grid(setdiff(g1,g2),setdiff(g2,g1))
-          ercv <- calcpairid(genepairs$Var1,genepairs$Var2, mat = intfterc)
-          c(mean(ercv, na.rm = T)*(length(ercv[!is.na(ercv)])>2))
+          g1r <- cplx[[combopairs$complexind1[x]]]
+          g2r <- cplx[[combopairs$complexind2[x]]]
+          g12r <- intersect(g1r, g2r)
+          g1 <- g1r[!g1r %in% g12r]
+          g2 <- g2r[!g2r %in% g12r]
+          if(length(g1)>2 & length(g2)>2){
+               genepairs <- expand.grid(g1,g2)
+               ercv <- calcpairid(genepairs$Var1,genepairs$Var2, mat = intfterc)
+               out <- ifelse(sum(!is.na(ercv)>2),mean(ercv, na.rm = T),NA)
+          }else{
+               out <- NA
+          }
+          out
      })
 }
 

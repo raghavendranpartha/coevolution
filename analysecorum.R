@@ -5,6 +5,8 @@ require(ggplot2)
 source('~/Documents/erc/code/funcsERCfromProjections.R')
 
 
+allcorumraw <- fread("../data/public/allComplexes.txt", header = T)
+
 corumraw <- fread('../data/public/coreComplexes.txt', header = T)
 corum <- corumraw %>% 
      filter(Organism == 'Human') %>%

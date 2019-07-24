@@ -78,6 +78,9 @@ string.type.use <- filter(string.type, !g1 %in% orgzfg, !g2 %in% orgzfg,!pair %i
      group_by(pair,mode) %>% 
      summarise(interc=interc[1],merc=merc[1],score=max(score),nds=nds[1])
 
+# write.table(string.type.use, file = '../data/public/string.protein.actions.cleaned.tsv',
+#             quote = F, row.names = F, sep = '\t')
+
 table(string.type$mode)
 
 # toppairs <- fread('../data/toperc/sumlogpftercgt5.bestbitscorepclt10.tsv', header = T)

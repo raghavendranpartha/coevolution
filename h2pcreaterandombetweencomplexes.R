@@ -22,7 +22,7 @@ arrnum <- as.numeric(args[3])
 cplx <- readRDS(cplxf)$cplx
 rand.cplxsq <- fread(cplxpairf)[,c(1:2)]
 
-nrandoms = 10
+nrandoms = 2
 randcplxs <- generate.randcplxs(cplx, hsap.genes.useforsim, genepresenceint, nrandoms = nrandoms)
 randcplxs.interc <- do.call('rbind',lapply(1:nrandoms, function(y){
      print(y)

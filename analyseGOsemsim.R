@@ -6,9 +6,9 @@ for(onttype in c('CC','MF','BP')){
 #for(onttype in c('CC','MF')){
      #onttype <- 'BP'
      assign(paste0('top100k',onttype),
-            readRDS(paste0('../data/geneSimBP/',onttype,'/top.sumfterc5.bestbitscorepclt10.tsv.rds')))
+            readRDS(paste0('../data/geneSim/',onttype,'/top.sumfterc5.bestbitscorepclt10.tsv.rds')))
      assign(paste0('bgd500k',onttype),
-            readRDS(paste0('../data/geneSimBP/',onttype,'/controlndatasetsmatched.top.sumfterc5.bestbitscorepclt10.tsv.rds')))
+            readRDS(paste0('../data/geneSim/',onttype,'/controlndatasetsmatched.top.sumfterc5.bestbitscorepclt10.tsv.rds')))
 }
 
 
@@ -25,15 +25,16 @@ controltoppairs$bpsemsim <- bgd500kBP[controltoppairs$pair]
 toppairs$ccsemsim <- top100kCC[toppairs$pair]
 controltoppairs$ccsemsim <- bgd500kCC[controltoppairs$pair]
 
-ns <- c(1000,10000,100000)
-for(nn in ns){
-     print(wilcox.test(toppairs[1:nn,]$mfsemsim, controltoppairs$mfsemsim, alternative = 'g')$p.value)
-     print(wilcox.test(toppairs[1:nn,]$ccsemsim, controltoppairs$ccsemsim, alternative = 'g')$p.value)
-     print(wilcox.test(toppairs[1:nn,]$bpsemsim, controltoppairs$bpsemsim, alternative = 'g')$p.value)
-}
-
 controltoppairs.control <- filter(controltoppairs, interc > -2, interc < 2)
 controltoppairs.control <- controltoppairs
+
+ns <- c(1000,10000,100000)
+for(nn in ns){
+     mfp <- wilcox.test(toppairs[1:nn,]$mfsemsim, controltoppairs.control$mfsemsim, alternative = 'g')$p.value
+     ccp <- wilcox.test(toppairs[1:nn,]$ccsemsim, controltoppairs.control$ccsemsim, alternative = 'g')$p.value
+     bpp <- wilcox.test(toppairs[1:nn,]$bpsemsim, controltoppairs.control$bpsemsim, alternative = 'g')$p.value
+     print(paste0(nn,':',formatC(bpp, 3),',',formatC(ccp, 3),',',format(mfp, 3)))
+}
 
 bpx <- qqplot(controltoppairs.control$ccsemsim, toppairs[1:10000,]$bpsemsim, col = 'red',plot = F)
 bpx2 <- qqplot(controltoppairs.control$ccsemsim, toppairs[1:1000,]$bpsemsim, col = 'red',plot = F)
@@ -103,6 +104,18 @@ plotbox2(bgd, xx = toppairs[1:10000,]$interc, yy = toppairs[1:10000,]$mfsemsim, 
 
 sum(is.na(bgd))
 sum(is.na(top1k))
+
+badcodes <- c('IBA','IBD','IKR','IRD','ISS','ISO','ISA','ISM','IGC','RCA')
+table(gogaf$V7)[badcodes]
+
+gogaf2 <- fread('../data/public/GOgaf/RAWgoa_human.gaf', skip = 31, header = F) %>% dplyr::select(c(2,3,5,7,10)) %>%
+     filter(!V7 %in% badcodes)
+gogaf2.bygene <- group_by(gogaf2, V3) %>% summarise(terms = paste(unique(V5), collapse = ","), nterms = length(unique(V5)))
+gogaf2.byterm <- group_by(gogaf2, V5) %>% summarise(genes = paste(unique(V3), collapse = ","), ngenes = length(unique(V3)))
+gogaf2.filt <- filter(gogaf2, !V5 %in% filter(gogaf2.byterm,ngenes>500)$V5)
+write.table(gogaf2.filt, file = '../data/public/GOgaf/goa_human.onlyexperimental.gaf',
+            quote = F, sep = '\t', row.names = F)
+
 
 gogaf <- fread('../data/public/GOgaf/RAWgoa_human.gaf', skip = 31, header = F) %>% dplyr::select(c(2,3,5,10))
 gogaf.bygene <- group_by(gogaf, V3) %>% summarise(terms = paste(unique(V5), collapse = ","), nterms = length(unique(V5)))
